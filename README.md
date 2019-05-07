@@ -14,7 +14,7 @@ LR-PKD can identify germline variants with high accuracy and confidence in compl
 
 * Variant validation: checking the mapping quality, read level mismatch rate (Rausch et al., 2018), and barcode-phaseblock matching of the supporting reads.
 
-LR-PKD generates a variant calling report, validation report with figures and summary statistics. Github: https://github.com/ding-lab/LRPKD
+LR-PKD generates a variant calling report, validation report with figures and summary statistics. Github: https://github.com/ding-lab/LR-PKD
 
 ## Installation
 
@@ -42,7 +42,7 @@ Install anaconda:
 * Prepare for LR-PKD
 Create a virtual environment:
 ```sh
-  conda create --name LRPKD bam-readcount ensembl-vep blast alfred samtools
+  conda create --name LR-PKD bam-readcount ensembl-vep blast alfred samtools
 ```
 
 ## Run
