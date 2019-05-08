@@ -1,7 +1,7 @@
 ## Arguments
 input_sample_name=" " # Sample name
-input_ref=" " # Path saving the reference (e.g. path/name, no need to include the *.fa file name) 
-input_fastq=" " # Path saving the FASTQ files (e.g. path/name, no need to include the *.fastq.gz file name)
+input_ref=" " # Path saving the reference (Users should follow the reference folder structure used in Long Ranger. If /reference/fasta/ref.fa, set /reference here) 
+input_fastq=" " # Path saving the FASTQ files (Users should follow the data folder structure used in Long Ranger. If /sample/1.fastq.gz, set /sample here)
 input_datatype=" " # WES or WGS
 input_build="GRCh38" # Reference built GRCh38 or GRCh37
 input_target_bed=" " # Target BED files. Users can choose to use their own BED or use the one provided in LR-PKD source
