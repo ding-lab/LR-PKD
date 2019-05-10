@@ -28,27 +28,40 @@ LR-PKD generates a variant calling report, validation report with figures and su
 ```sh
   git clone https://github.com/ding-lab/LR-PKD.git
 ```
-* Download and install Anaconda®.
+* Download Anaconda®.
+
 If conda is not installed, download the installer for Anaconda® for python 2.7.x here (https://www.anaconda.com/download/) or download and install via command line as follows (please copy link for the .sh file appropriate for your operational system in the webpage provided):
 ```sh
   wget https://repo.anaconda.com/archive/Anaconda2-5.2.0-Linux-x86_64.sh
 ```
 
-Install anaconda:
+* Install anaconda.
 ```sh
   bash Anaconda2-5.2.0-Linux-x86_64.sh
 ```
 
-* Prepare for LR-PKD
+* Prepare for LR-PKD.
+
 Create a virtual environment:
 ```sh
   conda create --name LR-PKD bam-readcount ensembl-vep blast alfred samtools
 ```
 
+* Intall VEP data libraries.
+
+The ensembl-vep installs only the variant effect predictor (VEP) library code. To install data libraries, use the 'vep_install' command installed along with it. For example, to install the VEP library for human GRCh38 to a directory.
+```sh
+  vep_install -a cf -s homo_sapiens -y GRCh38 -c /output/path/to/GRCh38/vep --CONVERT
+```
+/output/path/to/GRCh38/vep needs to be included in the config.sh.
+
 ## Run
 * Users need to get into the folder with the LR-PKD source to run the pipeline.
 ```sh
-  source activate LR-PKD
+  # To activate this environment, use:
+  conda activate LR-PKD
+  # To deactivate an active environment, use:
+  conda deactivate
 ```
 
 * Customize the arguments in config.sh as the inputs. If needed, users can update their list of genes with interest in Gene_interest.txt.
