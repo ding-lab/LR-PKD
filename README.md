@@ -40,9 +40,7 @@ If conda is not installed, download the installer for Anaconda® for python 2.7.
   bash Anaconda2-5.2.0-Linux-x86_64.sh
 ```
 
-* Prepare for LR-PKD.
-
-Create a virtual environment:
+* Create a virtual environment for LR-PKD.
 ```sh
   conda create --name LR-PKD bam-readcount ensembl-vep blast alfred samtools
 ```
@@ -53,7 +51,7 @@ The ensembl-vep installs only the variant effect predictor (VEP) library code. T
 ```sh
   vep_install -a cf -s homo_sapiens -y GRCh38 -c /output/path/to/GRCh38/vep --CONVERT
 ```
-/output/path/to/GRCh38/vep needs to be included in the config.sh.
+/output/path/to/GRCh38/vep should be identical to vep_cache_path in the config.sh.
 
 ## Run
 * Users need to get into the folder with the LR-PKD source to run the pipeline.
