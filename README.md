@@ -47,6 +47,9 @@ Create a virtual environment:
 
 ## Run
 * Users need to get into the folder with the LR-PKD source to run the pipeline.
+```sh
+  source activate LR-PKD
+```
 
 * Customize the arguments in config.sh as the inputs. If needed, users can update their list of genes with interest in Gene_interest.txt.
 
