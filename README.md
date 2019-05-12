@@ -42,7 +42,7 @@ If conda is not installed, download the installer for Anaconda® for python 2.7.
 
 * Create a virtual environment for LR-PKD.
 ```sh
-  conda create --name LR-PKD bam-readcount ensembl-vep blast alfred samtools
+  conda create --name LR-PKD bam-readcount ensembl-vep blast alfred samtools perl python=2.7 pysam pandas
 ```
 
 * Intall VEP data libraries.
