@@ -81,6 +81,9 @@ The ensembl-vep installs only the variant effect predictor (VEP) library code. T
 ## Contact
 * Yize Li yize.li@wustl.edu
 
+## License
+* This software is licensed under the GNU General Public License v3.0.
+
 
 
 
