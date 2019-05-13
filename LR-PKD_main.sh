@@ -3,7 +3,7 @@
 ################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
 # LR-PKD
 # Author: Yize Li yize.li@wustl.edu
-# Updated 05/08/2019
+# Updated 05/12/2019
 
 ## Overview
 ### LR-PKD is an analysis pipeline for haplotype-based variant detection with three independent modules including read alignment with Single Nucleotide Variation (SNV) and Structural Variation (SV) calling, downstream analysis, and the read evidence validation from linked-read sequencing data.
@@ -33,7 +33,7 @@
 ########################################################################################################################################################################################################################################################################################################################################################################################################################################################
 
 # Pipeline
-source activate LRPKD # Switch to virtual environment
+source activate LR-PKD # Switch to virtual environment
 source config.sh # Argumments set by the users in config.sh
 
 # Module 1: Long Ranger is called to process the 10x Genomics Chromium se-quencing data to align reads, de-duplication, filtering and using the Chromium molecular barcodes to call and phase SNPs, indels, and structural variants in 10X genome sequencing (longranger wgs) and 10X exome sequencing (longranger target)Long Ranger is called to process the 10x Genomics Chromium se-quencing data to align reads, de-duplication, filtering and using the Chromium molecular barcodes to call and phase SNPs, indels, and structural variants in 10X genome sequencing (longranger wgs) and 10X exome sequencing (longranger target).
@@ -77,7 +77,8 @@ vep_path=$(which vep)
 vep_only_path=${vep_path%/vep}
 
 ### Docker image
- docker run -t -i --rm -u $(id -u):$(id -g)       \
+ #docker run -t -i --rm -u $(id -u):$(id -g)       \
+ docker run --rm -u $(id -u):$(id -g)       \
             -v ${vep_cache_path}:/home/vep/.vep    \
             -v $PWD:/preprocess_root                \
             ensemblorg/ensembl-vep:release_91.3      \
@@ -90,24 +91,26 @@ vep_only_path=${vep_path%/vep}
                     -o /preprocess_root/input.vep.vcf
 
 ## Formatting: VCF to MAF; VEP annotation
+mkdir temp
 mkdir fasta
 cp ${input_ref}/fasta/* fasta
 
 ### Change the format using vcf2maf.pl which was adjusted from the version at https://github.com/mskcc/vcf2maf
 if [ ! -f ${working_path}/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz ]; then
 	echo "ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz not found, skip ExAC annotation."
-	perl ${working_path}/vcf2maf.v1.6.16.no_vep_no_ref.pl --input-vcf ${in} --output-maf ${out} --tumor-id PKD_K --normal-id PKD_N --ref-fasta ${reffasta} --filter-vcf 0 --ncbi-build GRCh38 --retain-info GT,DP,RO,QR,AO,QA,GL,BX,PS
+	perl ${working_path}/vcf2maf.v1.6.16.no_vep_no_ref.pl --input-vcf ${in} --output-maf ${out} --tumor-id PKD_K --normal-id PKD_N --ref-fasta ${reffasta} --filter-vcf 0 --ncbi-build GRCh38 #--retain-info GT,DP,RO,QR,AO,QA,GL,BX,PS
 else
-	perl ${working_path}/vcf2maf.v1.6.16.no_vep_no_ref.pl --input-vcf ${in} --output-maf ${out} --tumor-id PKD_K --normal-id PKD_N --ref-fasta ${reffasta} --filter-vcf ${working_path}/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz --ncbi-build GRCh38 --retain-info GT,DP,RO,QR,AO,QA,GL,BX,PS
+	perl ${working_path}/vcf2maf.v1.6.16.no_vep_no_ref.pl --input-vcf ${in} --output-maf ${out} --tumor-id PKD_K --normal-id PKD_N --ref-fasta ${reffasta} --filter-vcf ${working_path}/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz --ncbi-build GRCh38 #--retain-info GT,DP,RO,QR,AO,QA,GL,BX,PS
 fi
 
-sed -i 1d ${out} > input_d1.vep.maf # Remove the first row of output
+sed '/^#/ d' ${out} > input_d1.vep.maf # Remove the first row of output
 
 #### Extract the phasing genotype, barcode and phase block information to return file input.vep.GTPSBX.maf
-python GT_PS_BX_extraction.py input.vep.vcf
+python GT_PS_BX_extraction.py input.vep.vcf # This requires pysam and pandas
+cut -f2- input.vep.GTPSBX.temp.maf > input.vep.GTPSBX.maf
 
 # Extract the results of certain genes with interest (User can provide a list of genes with interest; if not provided, all genes in the results will be kept)
-if [ ! -f input_gene_interest ]; then
+if [ ! -f ${input_gene_interest} ]; then
 	echo "Gene list with interest is not provided by the user. All the genes in the results will be kept."
 	cut -f 1 input.vep.GTPSBX.maf | uniq > Gene_all.txt
 	perl Gene_noextraction.pl # This will return two files Genes_interest_all.results and Genes_interest_coding.results.
@@ -132,11 +135,10 @@ perl -e 'while(<>){chomp; @l = split(/\t/,); print "$l[2]\t$l[3]\t$l[3]\t\.\t".j
 
 # Get the bam-readcount
 bc_path=$(which bam-readcount)
-${bc_path} -f ${reffasta} ${path_variant}/phased_possorted_bam.bam -l ${working_path}/Genes_interest_all.bed > Genes_interest_all.readcount
-${bc_path} -f ${reffasta} ${path_variant}/phased_possorted_bam.bam -l ${working_path}/Genes_interest_coding.bed > Genes_interest_coding.readcount
-#bam-readcount -l Genes_interest_coding.bed -f /diskmnt/Datasets/Reference/LongRanger/GRCh38/refdata-GRCh38-2.1.0/fasta/genome.fa /diskmnt/Datasets/Kidney/PKD/BAM_new/10x_WES_hg38/longranger/TWAW-K1600481-cyst_5/outs/phased_possorted_bam.bam > Genes_interest_coding.readcount
+${bc_path} -l ${working_path}/Genes_interest_all.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_all.readcount
+${bc_path} -l ${working_path}/Genes_interest_coding.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_coding.readcount
 
-# Combine all information into a final report
+# Combine all information into a final report and add the built-in LR-PKD filter
 perl final_report.pl Genes_interest_all
 perl final_report.pl Genes_interest_coding
 
@@ -146,8 +148,8 @@ awk -v OFS="\t" 'NR==1{$23="Chr:Pos"}NR>1{$23=$3":"$4"-"$5}1' Genes_interest_cod
 
 # Module 3: LR-PKD validates the PKD1 read evidence by checking the mapping quality, read level mismatch rate, cross-checking barcodes and the corresponding phase block IDs and aligning reads supporting the muta-tions to the reference genome to make sure the reads truly align to PKD1 over its six pseudogenes.
 
-## Mapping quality, read level mismatch rate etc (Alfred Alignment Quality Control)
-### Agilent BED file (hg38) in PKD1 has been downloaded to LR-PKD folder
+## Read collection, mapping quality, read level mismatch rate etc (Alfred Alignment Quality Control)
+### Agilent BED file (hg38) in PKD1 has been downloaded to LR-PKD folder. If needed, users can customize the file or download the hg19 version with naming it as PKD1.bed.
 samtools_path=$(which samtools)
 alfred_path=$(which alfred)
 ${samtools_path} view -b ${path_variant}/phased_possorted_bam.bam -L PKD1.bed -o PKD1_10x${input_datatype}.bam
@@ -156,19 +158,22 @@ ${alfred_path} qc -r ${reffasta} -o PKD1_10x${input_datatype}.tsv.gz PKD1_10x${i
 git clone https://github.com/tobiasrausch/alfred.git
 Rscript alfred/scripts/stats.R PKD1_10x${input_datatype}.tsv.gz
 
-## BLAST alignment
-cat Genes_interest_coding.output2.tsv | awk '{ print $23}' | grep chr > variant_list
+## Read alignment (BLAST)
+makeblastdb -in ${reffasta} -dbtype nucl -parse_seqids # Building a BLAST database with local sequences
+
+cat Genes_interest_coding.final.tsv | awk '{ print $23}' | grep chr > variant_list # Getting the chr:start-end
 idx=0
 while read chrpos; do
   idx=$((idx+1))
-  samtools view -b PKD1_10x${input_datatype}.bam chrpos > temp.bam
+  samtools view -b PKD1_10x${input_datatype}.bam ${chrpos} > temp.bam
   samtools bam2fq temp.bam | seqtk seq -A > temp.fa
-  blastn -db nt -query temp.fa -outfmt 6 | sort -k1,1 -k12,12nr -k11,11n | sort -u -k1,1 --merge > blast_${idx}.txt
+  blastn -db ${reffasta} -query temp.fa -outfmt 6 | sort -k1,1 -k12,12nr -k11,11n | sort -u -k1,1 --merge > blast_${idx}.txt
   rm temp.bam
   rm temp.fa
 done <variant_list
+mv variant_list temp
 
-## MAPQ checking
+## MAPQ (ambiguity checking)
 while read CHR START END; do
   samtools view -b PKD1_10x${input_datatype}.bam ${CHR}:${START}-${END} -o MAPQ_${START}.bam
   samtools view MAPQ_${START}.bam | cut -f5 > MAPQ_${START}.out
@@ -178,21 +183,34 @@ done <PKD1.bed
 cat MAPQ_*.out > MAPQ_PKD1_exon.txt
 rm MAPQ_*.out
 
-# Create the folder saving all outputs
-mkdir output_final
-mkdir output_final/blast
-mv blast_* output_final/blast
-mv MAPQ_PKD1_exon.txt output_final
-mv Genes_interest_coding.output.tsv output_final
-mv Genes_interest_all.output.tsv output_final
-mv PKD1_10x${input_datatype}.tsv.gz.pdf output_final
+## MAPQ density plot
+Rscript MAPQ_stat_histogram.R ${working_path}/MAPQ_PKD1_exon.txt > ${working_path}/MAPQ_PKD1_exon.txt.stat.txt
 
-# Remove all intermediate files to save space
-rm -r ${working_path}/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz
-rm -r ${working_path}/input.vcf
-rm -r ${working_path}/Genes_interest_all.results
-rm -r ${working_path}/Genes_interest_coding.results
-rm -r ${working_path}/Genes_interest_all.bed
-rm -r ${working_path}/Genes_interest_coding.bed
-rm -r ${working_path}/fasta
+## Barcode and phase-block matching is addressed in the final output in module 2 (Genes_interest_coding.final.tsv and Genes_interest_all.final.tsv).
 
+# Module 4: Clean-up
+## Create the output folders
+mkdir outputs
+mkdir outputs/1.Variant_calling
+mkdir outputs/2.Downstream_analysis
+mkdir outputs/3_1.Validation_summary_stat
+mkdir outputs/3_2.Validation_BLAST
+mkdir outputs/3_3.Validation_MAPQ
+
+## Move outputs
+mv ${working_path}/input.vcf ${working_path}/outputs/1.Variant_calling
+mv Genes_interest_*.final.tsv ${working_path}/outputs/2.Downstream_analysis
+mv PKD1_*.tsv.gz.* ${working_path}/outputs/3_1.Validation_summary_stat
+mv blast_* ${working_path}/outputs/3_2.Validation_BLAST
+mv MAPQ_PKD1_exon.txt* ${working_path}/outputs/3_3.Validation_MAPQ
+
+## Move all intermediate files to temp folder.
+mv ${working_path}/Genes_interest_* ${working_path}/temp
+mv ${working_path}/input.vep.* ${working_path}/temp
+mv ${working_path}/input_d1.vep.maf ${working_path}/temp
+mv ${working_path}/PKD1_* ${working_path}/temp
+mv ${working_path}/fasta ${working_path}/temp
+mv ${working_path}/alfred ${working_path}/temp
+
+## Users can decide whether to delete the temp folder manually to save space.
+### rm -r ${working_path}/temp
