@@ -79,7 +79,7 @@ The ensembl-vep installs only the variant effect predictor (VEP) library code. T
   ./outputs/3_3.Validation_MAPQ
 ```
 ## Contact
-* Yize Li yize.li@wustl.edu
+* Yize Li, yize.li@wustl.edu
 
 ## License
 * This software is licensed under the GNU General Public License v3.0.
