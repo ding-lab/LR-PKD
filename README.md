@@ -6,6 +6,8 @@
 
 * LR-PKD can identify germline variants with high accuracy and confidence in complex loci such as PKD1 by effectively eliminating the false-positives and capturing the true-positives. With phasing the variants by long-range phase blocks that most other methods lack, it provides the haplotype information across genes such as TSC2 and PKD1 associated with the TSC2/PKD1 contiguous gene syndrome.
 
+* Source code is freely available at https://github.com/ding-lab/LR-PKD, distributed under the GNU GPLv3 license, implemented in R, Python, Perl, and Bash, and supported on Unix/Linux/OS X operating systems.
+
 ## Modules
 
 * Read alignment & SNV, SV calling: processing the 10x Genomics Chromium sequencing data by aligning reads, de-duplication, applying filters and using the Chromium molecular barcodes to call and phase SNPs, indels, and structural variants in 10x Genomics Sequencing (Long Ranger, Zheng et al., 2016).
