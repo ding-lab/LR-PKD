@@ -64,7 +64,7 @@ The ensembl-vep installs only the variant effect predictor (VEP) library code. T
   conda deactivate
 ```
 
-* Customize the arguments in config.sh as the inputs. If needed, users can update their list of genes with interest in Gene_interest.txt.
+* Customize the arguments in config.sh as the inputs. If needed, users can update their gene list with interest in Gene_interest.txt.
 
 * Run the pipeline.
 ```sh
