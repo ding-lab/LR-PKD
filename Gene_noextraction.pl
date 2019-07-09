@@ -10,7 +10,7 @@ while(<IN>)
 	$h1{$_} = "";
 }
 
-open(DA, "<input.vep.maf");
+open(DA, "<input.vep.GTPSBX.maf");
 open(OUT1, ">Genes_interest_coding.results");
 <DA>;<DA>;
 while(<DA>)
@@ -36,7 +36,7 @@ while(<IN>)
         $h1{$_} = "";
 }
 
-open(DA, "<input.vep.maf");
+open(DA, "<input.vep.GTPSBX.maf");
 open(OUT1, ">Genes_interest_all.results");
 <DA>;<DA>;
 while(<DA>)
