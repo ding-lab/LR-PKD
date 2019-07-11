@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-open(IN, "$ARGV[0].results");
+open(IN, "$ARGV[0].results.cut");
 open(DA, "$ARGV[0].readcount");
 open(OUT, ">$ARGV[0].output.tsv");
 print OUT "Hugo_Symbol\tNCBI_Build\tChr\tStart\tEnd\tEffect\tType\tRef\tAlt\tNovelty\tNucleotide\tAminoAcid\tGene\tFeature\tFeature_type\tSIFT\tPolyPhen\tCLIN_SIG\tLONGRANGER_FILTER\tGT\tPS\tBX\tTotal_count\tRef_count\tAlt_count\tVAF\tLRPKD_FILTER\n";
