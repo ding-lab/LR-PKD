@@ -143,12 +143,15 @@ cut -f2 ${working_path}/Genes_interest_all.readcount > ${working_path}/Genes_int
 cut -f2 ${working_path}/Genes_interest_coding.readcount > ${working_path}/Genes_interest_coding.pos
 
 while read line; do
-  grep -w "$line" Genes_interest_all.results
-done < Genes_interest_all.pos > Genes_interest_all.results.cut
+  grep -w "$line" ${working_path}/Genes_interest_all.results
+done < ${working_path}/Genes_interest_all.pos > ${working_path}/Genes_interest_all.results.temp
 
 while read line; do
-  grep -w "$line" Genes_interest_coding.results
-done < Genes_interest_coding.pos > Genes_interest_coding.results.cut
+  grep -w "$line" ${working_path}/Genes_interest_coding.results
+done < ${working_path}/Genes_interest_coding.pos > ${working_path}/Genes_interest_coding.results.temp
+
+sort -u -V -k3,3 -k4,4 -k5,5 ${working_path}/Genes_interest_all.results.temp > ${working_path}/Genes_interest_all.results.cut
+sort -u -V -k3,3 -k4,4 -k5,5 ${working_path}/Genes_interest_coding.results.temp > ${working_path}/Genes_interest_coding.results.cut
 
 # Combine all information into a final report and add the built-in LR-PKD filter
 perl final_report.pl Genes_interest_all
