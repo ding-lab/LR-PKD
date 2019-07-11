@@ -138,13 +138,25 @@ bc_path=$(which bam-readcount)
 ${bc_path} -l ${working_path}/Genes_interest_all.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_all.readcount
 ${bc_path} -l ${working_path}/Genes_interest_coding.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_coding.readcount
 
+# Remove variants without read-count statistics
+cut -f2 ${working_path}/Genes_interest_all.readcount > ${working_path}/Genes_interest_all.pos
+cut -f2 ${working_path}/Genes_interest_coding.readcount > ${working_path}/Genes_interest_coding.pos
+
+while read line; do
+  grep -w "$line" Genes_interest_all.results
+done < Genes_interest_all.pos > Genes_interest_all.results.cut
+
+while read line; do
+  grep -w "$line" Genes_interest_coding.results
+done < Genes_interest_coding.pos > Genes_interest_coding.results.cut
+
 # Combine all information into a final report and add the built-in LR-PKD filter
 perl final_report.pl Genes_interest_all
 perl final_report.pl Genes_interest_coding
 
 # Add column Chr:Pos
-awk -v OFS="\t" 'NR==1{$23="Chr:Pos"}NR>1{$23=$3":"$4"-"$5}1' Genes_interest_all.output.tsv > Genes_interest_all.final.tsv
-awk -v OFS="\t" 'NR==1{$23="Chr:Pos"}NR>1{$23=$3":"$4"-"$5}1' Genes_interest_coding.output.tsv > Genes_interest_coding.final.tsv
+awk -v OFS="\t" 'NR==1{$28="Chr:Pos"}NR>1{$28=$3":"$4"-"$5}1' Genes_interest_all.output.tsv > Genes_interest_all.final.tsv
+awk -v OFS="\t" 'NR==1{$28="Chr:Pos"}NR>1{$28=$3":"$4"-"$5}1' Genes_interest_coding.output.tsv > Genes_interest_coding.final.tsv
 
 # Module 3: LR-PKD validates the PKD1 read evidence by checking the mapping quality, read level mismatch rate, cross-checking barcodes and the corresponding phase block IDs and aligning reads supporting the muta-tions to the reference genome to make sure the reads truly align to PKD1 over its six pseudogenes.
 
