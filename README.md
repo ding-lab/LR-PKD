@@ -24,6 +24,7 @@ LR-PKD generates a variant calling report, validation report with figures and su
 * Long Ranger and reference: please follow the instruction at https://support.10xgenomics.com/genome-exome/software/pipelines/latest/installation
 * git
 * conda
+* GATK (optional): As recommended, running longranger with GATK for more accurate calling of SNPs and indels. Users need to have a working version of GATK installed on the working system before running the pipeline. Support is also provided for using a bundled build of Freebayes which will be installed within Long Ranger. Long Ranger uses GATK's HaplotypeCaller mode. See the GATK installation instructions (https://software.broadinstitute.org/gatk/documentation/quickstart).
 
 ### Installation steps
 * Download the LR-PKD source.
