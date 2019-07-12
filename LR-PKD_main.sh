@@ -51,18 +51,24 @@ if [ $input_datatype = "WGS" ]; then
 	echo "The variant calling results will be saved in the .${input_sample_name}/outs under the current working path ${working_path}."
 	for i in ${input_sample_name}
 	do
-		nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=gatk:${gatk_path} --somatic --localcores=60 
-		### If users prefer to use freebayes model, please comment out this line and uncomment out the next line.
-		#nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=freebayes --somatic --localcores=60
+		if [ $gatk_path = "NA" ]; then
+			echo "Calling variant using Freebayes."
+			nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=freebayes --somatic --localcores=60
+		else
+			echo "Calling variant using GATK."
+			nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=gatk:${gatk_path} --somatic --localcores=60 
 	done
 elif [ $input_datatype = "WES" ]; then
 	echo "Th WES sample of ${input_sample_name} was provided to LR-PKD."
 	echo "The variant calling results will be saved in the .${input_sample_name}/outs under the current working path ${working_path}."
 	for i in ${input_sample_name}
 	do
-		nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=gatk:${gatk_path} --somatic --localcores=30
-		### If users prefer to use freebayes model, please comment out this line and uncomment out the next line.
-		#nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=freebayes --somatic --localcores=30
+		if [ $gatk_path = "NA" ]; then
+			echo "Calling variant using Freebayes."
+			nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=freebayes --somatic --localcores=30
+		else
+			echo "Calling variant using GATK."
+			nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=gatk:${gatk_path} --somatic --localcores=30
 	done
 else
 	echo "The data type should be either wgs or wes. Wrong data type was provided by the user. Please double check."
