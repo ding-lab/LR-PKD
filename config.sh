@@ -9,7 +9,7 @@ input_CNV_bed=" " # CNV BED files required by WES longranger targeted. Users can
 working_path=$(pwd -P) # Current working path
 input_gene_interest=${working_path}/Gene_interest.txt # Users can modified the list of genes with interest
 vep_cache_path=" " # The path of VEP cache
-gatk_path="" # Required by Long Ranger if users choose to select GATK for variant calling. Such as ./gatk-4.0.3.0/gatk-package-4.0.3.0-local.jar
+gatk_path="#" # Required by Long Ranger if users choose to select GATK for variant calling. Such as ./gatk-4.0.3.0/gatk-package-4.0.3.0-local.jar
 
 ### In order to directly call the tools, make sure the paths are saved in ./~bashrc. For instance,
 ### export PATH="/path/longranger-2.2.2/longranger-cs/2.2.2/bin:$PATH"
