@@ -3,7 +3,7 @@
 ################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
 # LR-PKD
 # Author: Yize Li yize.li@wustl.edu
-# Updated 05/12/2019
+# Updated 07/12/2019
 
 ## Overview
 ### LR-PKD is an analysis pipeline for haplotype-based variant detection with three independent modules including read alignment with Single Nucleotide Variation (SNV) and Structural Variation (SV) calling, downstream analysis, and the read evidence validation from linked-read sequencing data.
@@ -43,19 +43,26 @@ source config.sh # Argumments set by the users in config.sh
 #### Long Ranger includes a CNV caller that detects exon-scale deletions in targeted regions. It is important to supply the --cnvfilter argument a BED file which masks problematic regions where baits perform poorly, to prevent false-positive calls. We have created a cnvfilter file tailored to the SureSelect Human All Exon V6 r2 BED file, which is available for download: Agilent Exome V6 r2 CNV Filter BED.
 
 ## Calling Long Ranger
+### Long Ranger recommends running with GATK for more accurate calling of SNPs and indels. User must already have a working version of GATK installed on your system. Support is also provided for using a bundled build of Freebayes. Long Ranger uses GATK's HaplotypeCaller mode. See the GATK installation instruction at https://software.broadinstitute.org/gatk/documentation/quickstart.
+### Version of GATK must be 3.3-3.8, or 4 except 3.6 required by Long Ranger.
+longranger_path=$(which longranger)
 if [ $input_datatype = "WGS" ]; then
 	echo "Th WGS sample of ${input_sample_name} was provided to LR-PKD."
 	echo "The variant calling results will be saved in the .${input_sample_name}/outs under the current working path ${working_path}."
 	for i in ${input_sample_name}
 	do
-	nohup longranger wgs --id=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=freebayes --somatic --localcores=60
+		nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=gatk:${gatk_path} --somatic --localcores=60 
+		### If users prefer to use freebayes model, please comment out this line and uncomment out the next line.
+		#nohup ${longranger_path} wgs --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --vcmode=freebayes --somatic --localcores=60
 	done
 elif [ $input_datatype = "WES" ]; then
 	echo "Th WES sample of ${input_sample_name} was provided to LR-PKD."
 	echo "The variant calling results will be saved in the .${input_sample_name}/outs under the current working path ${working_path}."
 	for i in ${input_sample_name}
 	do
-	nohup longranger targeted --id=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=freebayes --somatic --localcores=30
+		nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=gatk:${gatk_path} --somatic --localcores=30
+		### If users prefer to use freebayes model, please comment out this line and uncomment out the next line.
+		#nohup ${longranger_path} targeted --id=${i} --sample=${i} --reference=${input_ref} --fastqs=${input_fastq} --targets=${input_target_bed} --cnvfilter=${input_CNV_bed} --vcmode=freebayes --somatic --localcores=30
 	done
 else
 	echo "The data type should be either wgs or wes. Wrong data type was provided by the user. Please double check."
