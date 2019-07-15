@@ -65,5 +65,8 @@ for l in range(len(GT_list)):
 file1 = pd.read_csv('input_d1.vep.maf', na_filter=False, float_precision=None, sep='\t', low_memory=False)
 file2 = pd.read_csv('input.vep.vcf_GT_PS_BX.txt', na_filter=False, float_precision=None, sep='\t', low_memory=False)
 
-merge_df = pd.merge(file1, file2, on=['Chromosome', 'Start_Position']).fillna(0) #, how='left'
+sorted_file1 = file1.sort_values(by=['Chromosome', 'Start_Position'])
+sorted_file2 = file2.sort_values(by=['Chromosome', 'Start_Position'])
+
+merge_df = pd.merge(sorted_file1, sorted_file2, on=['Chromosome', 'Start_Position'], how='left').fillna(0)
 merge_df.to_csv('input.vep.GTPSBX.temp.maf', sep='\t')
