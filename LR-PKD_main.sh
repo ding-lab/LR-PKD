@@ -187,9 +187,9 @@ git clone https://github.com/tobiasrausch/alfred.git
 Rscript alfred/scripts/stats.R PKD1_10x${input_datatype}.tsv.gz
 ### PKD1 pseudogene read extraction
 ${samtools_path} view -b ${path_variant}/phased_possorted_bam.bam -L PKD1P_all.bed -o PKD1P_all_10x${input_datatype}.bam
-${samtools_path} index PKD1P_all_10x$input_datatype.bam
+${samtools_path} index PKD1P_all_10x${input_datatype}.bam
 ${samtools_path} view -b ${path_variant}/phased_possorted_bam.bam -L PKD1P_coding.bed -o PKD1P_coding_10x${input_datatype}.bam
-${samtools_path} index PKD1P_coding_10x$input_datatype.bam
+${samtools_path} index PKD1P_coding_10x${input_datatype}.bam
 
 ## Read alignment (BLAST)
 makeblastdb -in ${reffasta} -dbtype nucl -parse_seqids # Building a BLAST database with local sequences
