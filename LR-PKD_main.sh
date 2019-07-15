@@ -148,8 +148,8 @@ perl -e 'while(<>){chomp; @l = split(/\t/,); print "$l[2]\t$l[3]\t$l[3]\t\.\t".j
 
 # Get the bam-readcount
 bc_path=$(which bam-readcount)
-${bc_path} -l ${working_path}/Genes_interest_all.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_all.readcount
-${bc_path} -l ${working_path}/Genes_interest_coding.bed -f ${reffasta} ${path_variant}/phased_possorted_bam.bam  > Genes_interest_coding.readcount
+${bc_path} -l ${working_path}/Genes_interest_all.bed -f ${reffasta} -w 1 ${path_variant}/phased_possorted_bam.bam  > Genes_interest_all.readcount
+${bc_path} -l ${working_path}/Genes_interest_coding.bed -f ${reffasta} -w 1 ${path_variant}/phased_possorted_bam.bam  > Genes_interest_coding.readcount
 
 # Remove variants without read-count statistics
 cut -f2 ${working_path}/Genes_interest_all.readcount > ${working_path}/Genes_interest_all.pos
