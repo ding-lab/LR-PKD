@@ -204,7 +204,7 @@ while read chrpos; do
   rm temp.bam
   rm temp.fa
 done <variant_list
-mv variant_list temp
+mv variant_list ${working_path}/temp
 
 ## MAPQ (ambiguity checking)
 while read CHR START END; do
